@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 
 contract Collectibles is ERC721URIStorage, Ownable {
-  event CollectibleCreated(uint256 indexed tokenId, address indexed owner, string name, uint256 price);
+  event CollectibleCreated(uint256 indexed tokenId, address indexed owner, string name, uint256 price, string tokenURI);
 
   struct Collectible {
     address owner;
@@ -29,6 +29,6 @@ contract Collectibles is ERC721URIStorage, Ownable {
     super._safeMint(_msgSender(), tokenId);
     super._setTokenURI(tokenId, tokenURI);
 
-    emit CollectibleCreated(tokenId, _msgSender(), name, price);
+    emit CollectibleCreated(tokenId, _msgSender(), name, price, tokenURI);
   }
 }

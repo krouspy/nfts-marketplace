@@ -1,18 +1,25 @@
-const { expect } = require("chai");
+const { expect } = require('chai');
 
-describe("Greeter", function () {
-  it("Should return the new greeting once it's changed", async function () {
-    const Greeter = await ethers.getContractFactory("Greeter");
-    const greeter = await Greeter.deploy("Hello, world!");
-    await greeter.deployed();
+describe('Luna', function () {
+  let luna;
+  let deployer;
 
-    expect(await greeter.greet()).to.equal("Hello, world!");
+  this.beforeEach(async () => {
+    [deployer] = await ethers.getSigners();
 
-    const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
+    const Luna = await ethers.getContractFactory('Luna');
+    luna = await Luna.deploy();
+    await luna.deployed();
+  });
 
-    // wait until the transaction is mined
-    await setGreetingTx.wait();
+  it('should set deployer to contract owner', async () => {
+    const owner = await luna.owner();
+    expect(owner).to.be.equal(deployer.address);
+  });
 
-    expect(await greeter.greet()).to.equal("Hola, mundo!");
+  it('claimTokens()', async () => {
+    await luna.claimTokens();
+    const balance = Number(await luna.balanceOf(deployer.address));
+    expect(balance).to.be.equal(10000);
   });
 });
