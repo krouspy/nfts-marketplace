@@ -16,6 +16,8 @@ async function main() {
   const lunary = await Lunary.deploy(luna.address, collectibles.address);
   await lunary.deployed();
 
+  await collectibles.updateWhitelisted(lunary.address);
+
   console.log('Luna deployed to:', luna.address);
   console.log('Collectibles deployed to:', collectibles.address);
   console.log('Lunary deployed to:', lunary.address);
