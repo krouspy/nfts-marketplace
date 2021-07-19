@@ -31,7 +31,8 @@ describe('Collectibles', function () {
     const totalCollectibles_ = Number(await collectibles.totalCollectibles());
     expect(totalCollectibles_).to.be.equal(tokenId + 1);
 
-    const [owner_, name_, price_] = await collectibles.collectibles(tokenId);
+    const [tokenId_, owner_, name_, price_] = await collectibles.collectibles(tokenId);
+    expect(tokenId_).to.be.equal(tokenId);
     expect(owner_).to.be.equal(deployer.address);
     expect(name_).to.be.equal(name);
     expect(price_).to.be.equal(price);

@@ -9,6 +9,7 @@ contract Collectibles is ERC721URIStorage, Ownable {
   event CollectibleCreated(uint256 indexed tokenId, address indexed owner, string name, uint256 price, string tokenURI);
 
   struct Collectible {
+    uint256 id;
     address owner;
     string name;
     uint256 price;
@@ -30,7 +31,7 @@ contract Collectibles is ERC721URIStorage, Ownable {
   function createCollectible(string memory name, uint256 price, string memory tokenURI) public {
     uint256 tokenId = collectibles.length;
 
-    collectibles.push(Collectible(_msgSender(), name, price));
+    collectibles.push(Collectible(tokenId, _msgSender(), name, price));
 
     super._safeMint(_msgSender(), tokenId);
     super._setTokenURI(tokenId, tokenURI);

@@ -19,7 +19,7 @@ contract Lunary is Ownable {
 
   function buyCollectible(uint256 tokenId) public {
     uint256 balance = _luna.balanceOf(_msgSender());
-    (address owner,, uint256 price) = _collectibles.collectibles(tokenId);
+    (, address owner,, uint256 price) = _collectibles.collectibles(tokenId);
 
     require(balance >= price, "Lunary: insufficient balance");
 
