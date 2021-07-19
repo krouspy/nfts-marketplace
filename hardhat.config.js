@@ -1,4 +1,4 @@
-import 'dotenv/config';
+require('dotenv').config();
 require('@nomiclabs/hardhat-waffle');
 
 const rinkeby_private_key = process.env.RINKEBY_PRIVATE_KEY;

@@ -22,14 +22,14 @@ describe('Collectibles', function () {
   });
 
   it('should create a collectible', async () => {
-    const tokenId = 1;
+    const tokenId = 0;
 
     expect(await collectibles.createCollectible(name, price, tokenURI))
       .to.emit(collectibles, 'CollectibleCreated')
       .withArgs(tokenId, deployer.address, name, price, tokenURI);
 
     const totalCollectibles_ = Number(await collectibles.totalCollectibles());
-    expect(totalCollectibles_).to.be.equal(tokenId);
+    expect(totalCollectibles_).to.be.equal(tokenId + 1);
 
     const [owner_, name_, price_] = await collectibles.collectibles(tokenId);
     expect(owner_).to.be.equal(deployer.address);

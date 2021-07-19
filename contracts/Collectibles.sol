@@ -14,17 +14,23 @@ contract Collectibles is ERC721URIStorage, Ownable {
     uint256 price;
   }
 
-  mapping(uint256 => Collectible) public collectibles;
-
-  uint256 public totalCollectibles;
+  Collectible[] public collectibles;
 
   constructor() ERC721("Collectibles", "CLB") {}
 
-  function createCollectible(string memory name, uint256 price, string memory tokenURI) public {
-    totalCollectibles++;
+  function totalCollectibles() public view returns (uint256) {
+    return collectibles.length;
+  }
 
-    uint256 tokenId = totalCollectibles;
-    collectibles[tokenId] = Collectible(_msgSender(), name, price);
+  function getCollectible(uint256 tokenId) public view returns (Collectible memory) {
+    require(tokenId < collectibles.length, "Collectibles: query non-existant token");
+    return collectibles[tokenId];
+  }
+
+  function createCollectible(string memory name, uint256 price, string memory tokenURI) public {
+    uint256 tokenId = collectibles.length;
+
+    collectibles.push(Collectible(_msgSender(), name, price));
 
     super._safeMint(_msgSender(), tokenId);
     super._setTokenURI(tokenId, tokenURI);

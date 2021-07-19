@@ -36,7 +36,7 @@ describe('Lunary', function () {
     await collectibles.createCollectible(name, price, tokenURI);
     await luna.connect(addr1).claimTokens();
 
-    const tokenId = 1;
+    const tokenId = 0;
 
     await luna.connect(addr1).approve(lunary.address, price);
     await collectibles.approve(lunary.address, tokenId);
