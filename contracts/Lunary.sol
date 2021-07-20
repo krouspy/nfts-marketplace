@@ -25,6 +25,7 @@ contract Lunary is Ownable {
 
     _luna.transferFrom(_msgSender(), owner, price);
     _collectibles.safeTransferFrom(owner, _msgSender(), tokenId);
+    _collectibles.updateCollectibleOwner(tokenId, _msgSender());
 
     emit CollectibleBought(owner, _msgSender(), price);
   }

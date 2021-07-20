@@ -33,6 +33,7 @@ describe('Lunary', function () {
   });
 
   it('buyCollectible()', async () => {
+    await collectibles.updateWhitelisted(lunary.address);
     await collectibles.createCollectible(name, price, tokenURI);
     await luna.connect(addr1).claimTokens();
 
