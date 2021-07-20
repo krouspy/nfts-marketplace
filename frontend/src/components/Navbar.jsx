@@ -95,7 +95,7 @@ export const Navbar = ({ tokenSymbol, triggerRefreshContent }) => {
           fontFamily="heading"
           color={useColorModeValue('gray.800', 'white')}
         >
-          Lunary
+          NFT Marketplace
         </Text>
       </Flex>
 
