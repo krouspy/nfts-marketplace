@@ -5,6 +5,7 @@ import {
   IconButton,
   Button,
   HStack,
+  useToast,
   useColorModeValue,
   useBreakpointValue,
   useDisclosure,
@@ -12,15 +13,21 @@ import {
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import NFTModal from './NFTModal';
 import { useWeb3Context } from '../context/Web3Context';
+import { useLoader } from '../hooks/useLoader';
+import { useRefresh } from '../hooks/useRefresh';
 import { truncateMiddleString } from '../utils';
 
-export const Navbar = () => {
+export const Navbar = ({ tokenSymbol, triggerRefreshContent }) => {
   const { isOpen, onToggle } = useDisclosure();
-  const [token, setToken] = useState({ symbol: '', balance: 0 });
+  const [balance, setBalance] = useState(0);
+  const [refreshBalance, triggerRefreshBalance] = useRefresh();
+  const { openLoading, closeLoading } = useLoader();
+  const toast = useToast();
 
   const {
     provider,
     connect,
+    disconnect,
     userAddress,
     contracts: { luna },
   } = useWeb3Context();
@@ -28,18 +35,37 @@ export const Navbar = () => {
   useEffect(() => {
     const getBalance = async () => {
       if (luna && userAddress) {
-        const symbol = await luna.methods.symbol().call();
+        openLoading();
         const balance = await luna.methods.balanceOf(userAddress).call();
-        setToken({ symbol, balance });
+        setBalance(balance);
+        closeLoading();
       }
     };
 
     getBalance();
-  }, [luna, userAddress]);
+    // eslint-disable-next-line
+  }, [luna, userAddress, refreshBalance]);
 
   const claimTokens = async () => {
-    const receipt = await luna.methods.claimTokens().send({ from: userAddress });
-    console.log(receipt);
+    try {
+      openLoading();
+      await luna.methods.claimTokens().send({ from: userAddress });
+      toast({
+        title: 'Tokens claimed!',
+        position: 'bottom-right',
+        isClosable: true,
+      });
+    } catch (e) {
+      toast({
+        title: 'Error encountered',
+        position: 'bottom-right',
+        status: 'error',
+        isClosable: true,
+      });
+    } finally {
+      triggerRefreshBalance();
+      closeLoading();
+    }
   };
 
   return (
@@ -69,19 +95,22 @@ export const Navbar = () => {
           fontFamily="heading"
           color={useColorModeValue('gray.800', 'white')}
         >
-          Logo
+          Lunary
         </Text>
       </Flex>
 
       <HStack display={{ base: 'flex' }} align="center" spacing={6}>
         {provider ? (
           <>
-            <NFTModal tokenSymbol={token.symbol} />
+            <NFTModal tokenSymbol={tokenSymbol} triggerRefreshContent={triggerRefreshContent} />
             <Button onClick={claimTokens} colorScheme="blue" fontSize="sm">
               Claim Tokens
             </Button>
-            <Text>{`Balance: ${token.balance} ${token.symbol}`}</Text>
+            <Text>{`Balance: ${balance} ${tokenSymbol}`}</Text>
             <Text>{truncateMiddleString(userAddress)}</Text>
+            <Button onClick={disconnect} colorScheme="blue" fontSize="sm">
+              Disconnect
+            </Button>
           </>
         ) : (
           <Button onClick={connect} colorScheme="blue" fontSize="sm" fontWeight={400}>

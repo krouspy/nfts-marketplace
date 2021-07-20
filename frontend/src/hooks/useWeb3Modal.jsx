@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 
 const web3Modal = new Web3Modal({
-  cacheProvider: false,
+  cacheProvider: true,
   disableInjectedProvider: false,
   providerOptions: {
     walletconnect: {
@@ -16,14 +16,21 @@ const web3Modal = new Web3Modal({
 });
 
 export const useWeb3Modal = () => {
-  const [provider, setProvider] = useState(null)
-  const [userAddress, setUserAddress] = useState(null)
+  const [provider, setProvider] = useState(null);
+  const [userAddress, setUserAddress] = useState(null);
 
   useEffect(() => {
+    const init = async () => {
+      const provider = await web3Modal.connect();
+      setProvider(provider);
+    };
+
+    init();
+
     if (provider) {
       setUserAddress(provider.selectedAddress);
     }
-  }, [provider])
+  }, [provider]);
 
   const connect = async () => {
     const provider = await web3Modal.connect();
@@ -34,6 +41,7 @@ export const useWeb3Modal = () => {
     if (provider && provider.close) {
       await provider.close();
     }
+    setProvider(null);
     await web3Modal.clearCachedProvider();
   };
 
@@ -43,6 +51,6 @@ export const useWeb3Modal = () => {
     disconnect,
     userAddress,
   };
-}
+};
 
 export default useWeb3Modal;

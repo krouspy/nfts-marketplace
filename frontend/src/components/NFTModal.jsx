@@ -13,21 +13,26 @@ import {
   ModalFooter,
   FormControl,
   FormLabel,
+  useToast,
   useDisclosure,
 } from '@chakra-ui/react';
 import { useWeb3Context } from '../context/Web3Context';
+import Loader from './Loader';
 
-export const NFTModal = ({ tokenSymbol }) => {
+export const NFTModal = ({ tokenSymbol, triggerRefreshContent }) => {
   const initialRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
   const {
+    web3,
     userAddress,
-    contracts: { collectibles },
+    contracts: { collectibles, lunary },
   } = useWeb3Context();
 
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [imageUri, setImageUri] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const getNFT = async () => {
     // 671 characters
@@ -40,18 +45,40 @@ export const NFTModal = ({ tokenSymbol }) => {
 
   const handleSubmit = async () => {
     if (!name || !price || !imageUri) {
-      alert('Please fill out all fields');
+      toast({
+        title: 'Please fill out all fields',
+        position: 'bottom-right',
+        status: 'error',
+        isClosable: true,
+      });
       return;
     }
+
+    setLoading(true);
+    onClose();
 
     const receipt = await collectibles.methods
       .createCollectible(name, price, imageUri)
       .send({ from: userAddress });
-    console.log(receipt);
+
+    const { returnData } = receipt;
+    const tokenId = web3.utils.hexToNumber(returnData);
+
+    await collectibles.methods.approve(lunary._address, tokenId).send({ from: userAddress });
+
+    triggerRefreshContent();
+    setLoading(false);
+
+    toast({
+      title: 'NFT created!',
+      position: 'bottom-right',
+      isClosable: true,
+    });
   };
 
   return (
     <>
+      {loading && <Loader />}
       <Button onClick={onOpen} colorScheme="blue" fontSize="sm">
         Create NFT
       </Button>
@@ -112,7 +139,7 @@ export const NFTModal = ({ tokenSymbol }) => {
             <Button type="submit" onClick={handleSubmit} colorScheme="blue" mr={3}>
               Create
             </Button>
-            <Button>Cancel</Button>
+            <Button onClick={onClose}>Cancel</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
