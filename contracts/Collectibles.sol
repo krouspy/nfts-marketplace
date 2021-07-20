@@ -35,7 +35,7 @@ contract Collectibles is ERC721URIStorage, Ownable {
     return collectibles[tokenId];
   }
 
-  function createCollectible(string memory name, uint256 price, string memory tokenURI) public {
+  function createCollectible(string memory name, uint256 price, string memory tokenURI) public returns (uint256) {
     uint256 tokenId = collectibles.length;
 
     collectibles.push(Collectible(tokenId, _msgSender(), name, price));
@@ -44,6 +44,8 @@ contract Collectibles is ERC721URIStorage, Ownable {
     super._setTokenURI(tokenId, tokenURI);
 
     emit CollectibleCreated(tokenId, _msgSender(), name, price, tokenURI);
+
+    return tokenId;
   }
 
   function updateWhitelisted(address whitelisted) public onlyOwner {
