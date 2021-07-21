@@ -2,7 +2,7 @@ Basic NFT marketplace built on Arbitrum. The goal was for me to have a better vi
 
 Conclusion: It seems exactly the same with just a preliminary step that requires us to [bridge](https://bridge.arbitrum.io/) Eth from L1 to L2.
 
-Demo: [https://jolly-dtra-e21f8c.netlify.app/](https://jolly-dtra-e21f8c.netlify.app/)
+Demo: [https://jolly-dijkstra-e21f8c.netlify.app](https://jolly-dijkstra-e21f8c.netlify.app)
 
 Tools:
 
